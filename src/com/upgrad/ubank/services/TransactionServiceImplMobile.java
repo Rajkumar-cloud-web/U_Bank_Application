@@ -2,8 +2,6 @@ package com.upgrad.ubank.services;
 
 import com.upgrad.ubank.dtos.Transaction;
 
-import java.util.List;
-
 public class TransactionServiceImplMobile implements TransactionService {
     @Override
     public Transaction createTransaction(Transaction transaction) {
@@ -11,7 +9,7 @@ public class TransactionServiceImplMobile implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getTransactions(int accountNo) {
+    public Transaction[] getTransactions(int accountNo) {
         return null;
     }
 }

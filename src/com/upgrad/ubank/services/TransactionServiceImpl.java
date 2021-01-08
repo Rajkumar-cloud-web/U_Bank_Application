@@ -1,72 +1,46 @@
 package com.upgrad.ubank.services;
 
-import com.upgrad.ubank.dao.DAOFactory;
-import com.upgrad.ubank.dao.TransactionDAO;
-
 import com.upgrad.ubank.dtos.Transaction;
-import com.upgrad.ubank.interfaces.Observer;
-import com.upgrad.ubank.interfaces.Subject;
 
-import java.sql.SQLException;
-import java.util.List;
+public class TransactionServiceImpl implements TransactionService{
 
-public class TransactionServiceImpl implements TransactionService, Observer {
+    private Transaction[] transactions;
 
-    private static TransactionServiceImpl instance = new TransactionServiceImpl();
+    private int count;
 
-    private Subject accountServiceSubject;
-    private ServiceFactory serviceFactory;
-
-    private DAOFactory daoFactory;
-    private TransactionDAO transactionDAO;
-
-    private TransactionServiceImpl () {
-        serviceFactory = new ServiceFactory();
-        accountServiceSubject = (Subject) serviceFactory.getAccountService();
-        accountServiceSubject.registerObserver(this);
-
-        daoFactory = new DAOFactory();
-        transactionDAO = daoFactory.getTransactionDAO();
+    public TransactionServiceImpl()
+    {
+        transactions=new Transaction[100];
+        count=0;
     }
 
-    public static TransactionServiceImpl getInstance() {
-        if (instance == null) {
-            instance = new TransactionServiceImpl();
-        }
-        return instance;
+
+    @Override
+    public Transaction createTransaction(Transaction transaction) {
+
+        transactions[count]=transaction;
+        count=count+1;
+
+        return transaction;
     }
 
     @Override
-    public Transaction createTransaction(Transaction transaction) throws Exception {
-        Transaction temp = null;
-        try {
-            temp = transactionDAO.create(transaction);
-        } catch (SQLException e) {
-            throw new Exception("Some unexpected exception occurred");
-        }
-        return temp;
-    }
+    public Transaction[] getTransactions(int accountNo) {
 
-    @Override
-    public List<Transaction> getTransactions(int accountNo) throws Exception {
-        List<Transaction> temp;
-        try {
-            temp = transactionDAO.findByAccountNo(accountNo);
-        } catch (SQLException e) {
-            throw new Exception("Some unexpected exception occurred.");
-        }
-        return temp;
-    }
+        Transaction[] tempTransactions=new Transaction[100];
+        int tempCount=0;
 
-    @Override
-    public void update(Object data) {
-        if (data instanceof Transaction) {
-            Transaction temp = (Transaction) data;
-            try {
-                createTransaction(temp);
-            } catch (Exception e) {
-                e.printStackTrace();
+        for(int i=0; i<transactions.length; i++)
+        {
+            if(transactions[i].getAccountNo()==accountNo)
+            {
+                tempTransactions[tempCount]=transactions[i];
+                tempCount=tempCount+1;
             }
+
         }
+
+        return tempTransactions;
+        //return new Transaction[0];
     }
 }
